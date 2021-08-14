@@ -1,0 +1,5 @@
+package odin
+
+func Push() {
+	//
+}

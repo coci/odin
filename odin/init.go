@@ -17,10 +17,6 @@ func Init() {
 		return
 	}
 
-	err = os.Mkdir(currentDir+"/blog", 0755)
-	if err != nil {
-		return
-	}
 	err = os.Mkdir(currentDir+"/template", 0755)
 	if err != nil {
 		return
