@@ -25,6 +25,11 @@ func Config() {
 		log.Println(err)
 	}
 
+	_, err = exec.Command("bash", "-c", "echo \".DS_Store\" > .gitignore").Output()
+	if err != nil {
+		log.Println(err)
+	}
+
 	_, err = exec.Command("bash", "-c", "git add --all").Output()
 	if err != nil {
 		log.Println(err)

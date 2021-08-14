@@ -2,6 +2,7 @@ package odin
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -60,4 +61,21 @@ func CopyFile(src, dst string) {
 	}(destination)
 	io.Copy(destination, source)
 
+}
+
+
+func ListPosts() []string {
+	var postList []string
+
+	currentDirectory := GetCurrentDir()
+
+	files, err := ioutil.ReadDir(currentDirectory +"/content")
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _ ,element := range files{
+		postList = append(postList,element.Name())
+	}
+	return postList
 }
