@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="Farsi">
+<head>
+    <title>{{.Title }}</title>
+</head>
+<body>
+
+<section id="content" class="container">
+
+    <article id="create-link-shortening-in-django" class="article article-type-post" itemscope itemprop="blogPost">
+        <h2 class="title" itemprop="name">{{.Title }}</h2>
+
+
+        <h4 class="time">
+            <time datetime="2020-02-01 12:36:33" itemprop="datePublished">{{ .Date }}</time>
+        </h4>
+
+
+        <section class="content">
+            {{ .Content }}
+        </section>
+    </article>
+</section>
+
+
+<!-- /Content -->
+<!-- Footer -->
+<footer>
+    <!--<section class="copyright">
+    </section>-->
+    <section class="container">
+        <div class="delimiter">
+            <a href="/" class="logo">
+                <img src="/static/theme/sallar/img/logo.svg">
+            </a>
+        </div>
+    </section>
+</footer>
+<!-- /Footer -->
+
+<!-- Scripts -->
+<!--<script src="/static/theme/sallar/js/highlight.pack.js"></script>-->
+<!--<script>hljs.initHighlightingOnLoad();</script>-->
+</body>
+</html>

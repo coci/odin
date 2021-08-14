@@ -21,6 +21,7 @@ func Init() {
 	if err != nil {
 		return
 	}
+
 	err = os.Mkdir(currentDir+"/static", 0755)
 	if err != nil {
 		return
@@ -36,7 +37,6 @@ func Init() {
 	// copy static files
 	CopyFile(rootDir+"/static/blog_list.html", currentDir+"/template/blog_list.html")
 	CopyFile(rootDir+"/static/post.html", currentDir+"/template/post.html")
-	CopyFile(rootDir+"/static/main.css", currentDir+"/template/post.md")
 	CopyFile(rootDir+"/static/main.css", currentDir+"/static/main.css")
 
 }

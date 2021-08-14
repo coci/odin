@@ -1,5 +1,0 @@
----
-date: 
-title:
-permalink:
----
