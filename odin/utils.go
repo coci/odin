@@ -63,19 +63,20 @@ func CopyFile(src, dst string) {
 
 }
 
-
 func ListPosts() []string {
 	var postList []string
 
 	currentDirectory := GetCurrentDir()
 
-	files, err := ioutil.ReadDir(currentDirectory +"/content")
+	files, err := ioutil.ReadDir(currentDirectory + "/content")
 	if err != nil {
 		log.Println(err)
 	}
 
-	for _ ,element := range files{
-		postList = append(postList,element.Name())
+	for _, element := range files {
+		if element.Name() != ".DS_Store" {
+			postList = append(postList, element.Name())
+		}
 	}
 	return postList
 }

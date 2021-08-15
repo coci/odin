@@ -13,6 +13,19 @@ import (
 	"github.com/yuin/goldmark/parser"
 )
 
+// create dir for each post in /blog dir
+func createDirForPost(currentDir, title string) {
+	_, err := os.Stat(currentDir+"/blog/"+title)
+
+	// check if there isn't dir
+	if os.IsNotExist(err) {
+		err = os.Mkdir(currentDir+"/blog/"+title, 0755)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
 // Post struct will contain blog post
 type Post struct {
 	date      string
@@ -22,7 +35,7 @@ type Post struct {
 }
 
 // copy required static file
-func copyStatic(){
+func copyStatic() {
 	currentDir := GetCurrentDir()
 
 	err := os.Mkdir(currentDir+"/blog/static", 0755)
@@ -88,10 +101,7 @@ func buildPost(post *Post) {
 	content := readContent(post)
 
 	// create directory for post
-	err := os.Mkdir(currentDir+"/blog/"+convertedTitle, 0755)
-	if err != nil {
-		return
-	}
+	createDirForPost(currentDir, convertedTitle)
 
 	// read per-exist template
 	postHtmlTemplate, _ := ioutil.ReadFile(projectRoot + "/static/post.html")
@@ -100,11 +110,12 @@ func buildPost(post *Post) {
 	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(postHtmlTemplate)))
 	var templateBuffer bytes.Buffer
 	context := map[string]string{
-		"Title":   post.title,
-		"Date":    post.date,
-		"Content": content,
+		"Title":     post.title,
+		"Date":      post.date,
+		"Content":   content,
 		"Permalink": post.permalink,
 	}
+
 	_ = tpl.Execute(&templateBuffer, context)
 
 	// create html file and write pre-exists post template
@@ -113,17 +124,19 @@ func buildPost(post *Post) {
 	// write (post from markdown and concat the post into per-existing tempalte ) into html file
 	_, _ = htmlFile.WriteString(templateBuffer.String())
 
-	err = htmlFile.Close()
+	err := htmlFile.Close()
 	if err != nil {
-		return
+		panic(err)
 	}
 
 }
 
 // Build is entry function for 'odin build' command
 func Build() {
+	// copy required static file
 	copyStatic()
 
+	// list all posts
 	postList := ListPosts()
 
 	for _, post := range postList {
