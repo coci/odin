@@ -2,20 +2,32 @@ package odin
 
 import (
 	"bytes"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/parser"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 	"text/template"
-
-	"github.com/yuin/goldmark"
-	meta "github.com/yuin/goldmark-meta"
-	"github.com/yuin/goldmark/parser"
 )
+
+// Post struct will contain blog post
+type Post struct {
+	Date      string
+	Title     string
+	Permalink string // link of post
+	Source    []byte // content of markdown file
+}
+
+type IndexPage struct {
+	Title    string
+	BlogPost []Post
+}
 
 // create dir for each post in /blog dir
 func createDirForPost(currentDir, title string) {
-	_, err := os.Stat(currentDir+"/blog/"+title)
+	_, err := os.Stat(currentDir + "/blog/" + title)
 
 	// check if there isn't dir
 	if os.IsNotExist(err) {
@@ -26,16 +38,8 @@ func createDirForPost(currentDir, title string) {
 	}
 }
 
-// Post struct will contain blog post
-type Post struct {
-	date      string
-	title     string
-	permalink string // link of post
-	source    []byte // content of markdown file
-}
-
-// copy required static file
-func copyStatic() {
+// copy required file
+func copyRequiredFile() {
 	currentDir := GetCurrentDir()
 
 	err := os.Mkdir(currentDir+"/blog/static", 0755)
@@ -45,6 +49,8 @@ func copyStatic() {
 
 	CopyFile(currentDir+"/static/highlight.pack.js", currentDir+"/blog/static/highlight.pack.js")
 	CopyFile(currentDir+"/static/main.css", currentDir+"/blog/static/main.css")
+
+	CopyFile(currentDir+"/CNAME", currentDir+"/blog/CNAME")
 }
 
 // read Meta data from head of markdown file
@@ -73,10 +79,12 @@ func readMeta(source []byte) (string, string, string) {
 	return date, title, permalink
 }
 
-// read data from markdown exclude Meta data
+// read data from markdown exclude Meta data and convert it to html
 func readContent(post *Post) string {
 	var buf bytes.Buffer
-	if err := goldmark.Convert(post.source, &buf); err != nil {
+
+	// convert markdown string to html
+	if err := goldmark.Convert(post.Source, &buf); err != nil {
 		panic(err)
 	}
 
@@ -85,8 +93,30 @@ func readContent(post *Post) string {
 }
 
 // create index.html that list all blog posts
-func buildIndex(postList []string) {
-	//
+func buildIndex(posts []Post) {
+	currentDir := GetCurrentDir()
+	var templateBuffer bytes.Buffer
+
+	context := IndexPage{
+		"test",
+		posts,
+	}
+
+	IndexHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/index.html")
+	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(IndexHtmlTemplate)))
+	_ = tpl.Execute(&templateBuffer, context)
+
+	// create html file and write pre-exists post template
+	htmlFile, _ := os.Create(currentDir + "/blog/index.html")
+
+	// write into html file
+	_, _ = htmlFile.WriteString(templateBuffer.String())
+
+	err := htmlFile.Close()
+	if err != nil {
+		panic(err)
+	}
+
 }
 
 // create html file from markdown file
@@ -95,7 +125,7 @@ func buildPost(post *Post) {
 	projectRoot := GetProjectRootDir()
 
 	// convert title to 'dash-seperated'
-	convertedTitle := strings.ReplaceAll(post.title, " ", "-")
+	convertedTitle := strings.ReplaceAll(post.Title, " ", "-")
 
 	// get content of post exclude Meta data part
 	content := readContent(post)
@@ -110,10 +140,10 @@ func buildPost(post *Post) {
 	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(postHtmlTemplate)))
 	var templateBuffer bytes.Buffer
 	context := map[string]string{
-		"Title":     post.title,
-		"Date":      post.date,
+		"Title":     post.Title,
+		"Date":      post.Date,
 		"Content":   content,
-		"Permalink": post.permalink,
+		"Permalink": post.Permalink,
 	}
 
 	_ = tpl.Execute(&templateBuffer, context)
@@ -133,27 +163,31 @@ func buildPost(post *Post) {
 
 // Build is entry function for 'odin build' command
 func Build() {
-	// copy required static file
-	copyStatic()
+	// copy required file
+	copyRequiredFile()
 
 	// list all posts
 	postList := ListPosts()
 
-	for _, post := range postList {
+	// store all permalinks for posts
+	var posts []Post
+
+	for _, dir := range postList {
 		currentDir := GetCurrentDir()
 		// read post
-		source, _ := ioutil.ReadFile(currentDir + "/content/" + post)
+		source, _ := ioutil.ReadFile(currentDir + "/content/" + dir)
 
 		// get Meta data from the post
 		date, title, permalink := readMeta(source)
 
 		// create Post type
-		post := Post{date: date, title: title, permalink: permalink, source: source}
-
+		blogPost := Post{Date: date, Title: title, Permalink: permalink, Source: source}
+		posts = append(posts, blogPost)
 		// make html from post
-		buildPost(&post)
+		buildPost(&blogPost)
+
 	}
 
 	// make index.html that list all blog posts
-	buildIndex(postList)
+	buildIndex(posts)
 }
