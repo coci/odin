@@ -38,5 +38,6 @@ func Init() {
 	CopyFile(rootDir+"/static/blog_list.html", currentDir+"/template/blog_list.html")
 	CopyFile(rootDir+"/static/post.html", currentDir+"/template/post.html")
 	CopyFile(rootDir+"/static/main.css", currentDir+"/static/main.css")
+	CopyFile(rootDir+"/static/highlight.pack.js", currentDir+"/static/highlight.pack.js")
 
 }
