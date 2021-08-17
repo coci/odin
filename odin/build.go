@@ -39,7 +39,7 @@ func createDirForPost(currentDir, title string) {
 	}
 }
 
-// copy required file
+// copy required file ( static files, CNAME)
 func copyRequiredFile() {
 	currentDir := GetCurrentDir()
 
@@ -83,7 +83,7 @@ func readMeta(source []byte) (string, string, string) {
 // read data from markdown exclude Meta data and convert it to html
 func readContent(post *Post) string {
 	var buf bytes.Buffer
-	var re = regexp.MustCompile(`<hr>(.|\n)*?<\/h2>`)
+	var re = regexp.MustCompile(`<hr>(.|\n)*?</h2>`)
 
 	// convert markdown string to html
 	if err := goldmark.Convert(post.Source, &buf); err != nil {

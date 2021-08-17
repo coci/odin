@@ -13,7 +13,7 @@ func Config() {
 	_, err := fmt.Scan(&repo)
 	if err != nil {
 		return
-	}
+	};
 
 	_, err = exec.Command("bash", "-c", "git init").Output()
 	if err != nil {
