@@ -2,7 +2,6 @@ package odin
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -11,7 +10,7 @@ import (
 )
 
 func GetCurrentDir() string {
-	// find current directory
+	// find current directory of user terminal
 	path, err := os.Getwd()
 
 	if err != nil {
@@ -21,13 +20,14 @@ func GetCurrentDir() string {
 }
 
 func GetProjectRootDir() string {
+	// get odin installation dir
 	_, b, _, _ := runtime.Caller(0)
 	d := path.Join(path.Dir(b))
 	return filepath.Dir(d)
 }
 
 func CopyFile(src, dst string) {
-	// copy files through project
+	// copy file from src to dst
 
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -64,22 +64,4 @@ func CopyFile(src, dst string) {
 		log.Println(err)
 	}
 
-}
-
-func ListPosts() []string {
-	var postList []string
-
-	currentDirectory := GetCurrentDir()
-
-	files, err := ioutil.ReadDir(currentDirectory + "/content")
-	if err != nil {
-		log.Println(err)
-	}
-
-	for _, element := range files {
-		if element.Name() != ".DS_Store" {
-			postList = append(postList, element.Name())
-		}
-	}
-	return postList
 }

@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
@@ -24,6 +25,26 @@ type Post struct {
 type IndexPage struct {
 	Title    string
 	BlogPost []Post
+}
+
+// create blog directory
+func clearBlogDir() {
+	currentDir := GetCurrentDir()
+
+	d, err := os.Open(currentDir + "/blog")
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer d.Close()
+
+	names, _ := d.Readdirnames(-1)
+
+	for _, name := range names {
+		if filepath.Join(currentDir+"/blog", name) != currentDir+"/blog/.git" {
+			_ = os.RemoveAll(filepath.Join(currentDir+"/blog", name))
+		}
+	}
 }
 
 // create dir for each post in /blog dir
@@ -43,16 +64,34 @@ func createDirForPost(currentDir, title string) {
 func copyRequiredFile() {
 	currentDir := GetCurrentDir()
 
-	err := os.Mkdir(currentDir+"/blog/static", 0755)
-	if err != nil {
-		log.Println(err)
-	}
+	_ = os.Mkdir(currentDir+"/blog/static", 0755)
 
 	CopyFile(currentDir+"/static/highlight.pack.js", currentDir+"/blog/static/highlight.pack.js")
 	CopyFile(currentDir+"/static/main.css", currentDir+"/blog/static/main.css")
 
 	CopyFile(currentDir+"/CNAME", currentDir+"/blog/CNAME")
 }
+
+
+// list all post in content directory
+func listPosts() []string {
+	var postList []string
+
+	currentDirectory := GetCurrentDir()
+
+	files, err := ioutil.ReadDir(currentDirectory + "/content")
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _, element := range files {
+		if element.Name() != ".DS_Store" {
+			postList = append(postList, element.Name())
+		}
+	}
+	return postList
+}
+
 
 // read Meta data from head of markdown file
 func readMeta(source []byte) (string, string, string) {
@@ -92,7 +131,7 @@ func readContent(post *Post) string {
 
 	// slice of content of post exclude Meta data part
 
-	rs:=re.FindStringSubmatch(buf.String())
+	rs := re.FindStringSubmatch(buf.String())
 
 	return buf.String()[len(rs[0]):]
 
@@ -169,11 +208,14 @@ func buildPost(post *Post) {
 
 // Build is entry function for 'odin build' command
 func Build() {
+	// clear blog dir as old files
+	clearBlogDir()
+
 	// copy required file
 	copyRequiredFile()
 
 	// list all posts
-	postList := ListPosts()
+	postList := listPosts()
 
 	// store all permalinks for posts
 	var posts []Post
