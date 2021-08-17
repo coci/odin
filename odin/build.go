@@ -2,15 +2,15 @@ package odin
 
 import (
 	"bytes"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/parser"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
 	"strings"
 	"text/template"
-	"github.com/yuin/goldmark"
-	meta "github.com/yuin/goldmark-meta"
-	"github.com/yuin/goldmark/parser"
 )
 
 // Post struct will contain blog post
@@ -45,7 +45,7 @@ func copyRequiredFile() {
 
 	err := os.Mkdir(currentDir+"/blog/static", 0755)
 	if err != nil {
-		return
+		log.Println(err)
 	}
 
 	CopyFile(currentDir+"/static/highlight.pack.js", currentDir+"/blog/static/highlight.pack.js")
@@ -68,7 +68,7 @@ func readMeta(source []byte) (string, string, string) {
 	var buf bytes.Buffer
 	context := parser.NewContext()
 	if err := markdown.Convert(source, &buf, parser.WithContext(context)); err != nil {
-		log.Panicln()
+		log.Println(err)
 	}
 	metaData := meta.Get(context)
 
@@ -87,7 +87,7 @@ func readContent(post *Post) string {
 
 	// convert markdown string to html
 	if err := goldmark.Convert(post.Source, &buf); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// slice of content of post exclude Meta data part
@@ -120,7 +120,7 @@ func buildIndex(posts []Post) {
 
 	err := htmlFile.Close()
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 }
@@ -162,7 +162,7 @@ func buildPost(post *Post) {
 
 	err := htmlFile.Close()
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 }

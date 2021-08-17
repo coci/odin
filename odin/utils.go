@@ -45,7 +45,7 @@ func CopyFile(src, dst string) {
 	defer func(source *os.File) {
 		err := source.Close()
 		if err != nil {
-
+			log.Println(err)
 		}
 	}(source)
 
@@ -56,10 +56,13 @@ func CopyFile(src, dst string) {
 	defer func(destination *os.File) {
 		err := destination.Close()
 		if err != nil {
-
+			log.Println(err)
 		}
 	}(destination)
-	io.Copy(destination, source)
+	_, err = io.Copy(destination, source)
+	if err != nil {
+		log.Println(err)
+	}
 
 }
 

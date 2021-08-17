@@ -1,7 +1,7 @@
 package odin
 
 import (
-	"fmt"
+	"log"
 	"os"
 )
 
@@ -15,24 +15,24 @@ func Init() {
 	// create necessary directories
 	err := os.Mkdir(currentDir+"/content", 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	err = os.Mkdir(currentDir+"/template", 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	err = os.Mkdir(currentDir+"/static", 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	// create CNAME file
 	emptyFile, _ := os.Create(currentDir + "/CNAME")
 	err = emptyFile.Close()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	// copy static files
