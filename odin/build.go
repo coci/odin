@@ -2,14 +2,15 @@ package odin
 
 import (
 	"bytes"
-	"github.com/yuin/goldmark"
-	meta "github.com/yuin/goldmark-meta"
-	"github.com/yuin/goldmark/parser"
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"text/template"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/parser"
 )
 
 // Post struct will contain blog post
@@ -82,6 +83,7 @@ func readMeta(source []byte) (string, string, string) {
 // read data from markdown exclude Meta data and convert it to html
 func readContent(post *Post) string {
 	var buf bytes.Buffer
+	var re = regexp.MustCompile(`<hr>(.|\n)*?<\/h2>`)
 
 	// convert markdown string to html
 	if err := goldmark.Convert(post.Source, &buf); err != nil {
@@ -89,7 +91,11 @@ func readContent(post *Post) string {
 	}
 
 	// slice of content of post exclude Meta data part
-	return buf.String()[69:]
+
+	rs:=re.FindStringSubmatch(buf.String())
+
+	return buf.String()[len(rs[0]):]
+
 }
 
 // create index.html that list all blog posts
