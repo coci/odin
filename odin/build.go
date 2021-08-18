@@ -1,3 +1,20 @@
+// Copyright (C) 2021- Soroush Safari <soroush_safarii@yahoo.com>
+//
+// This file is part of Odin.
+//
+// Odin is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Odin is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+// along with Odin.  If not, see <http://www.gnu.org/licenses/>.
+
 package odin
 
 import (
@@ -94,16 +111,16 @@ func listPosts() []string {
 
 
 // read Meta data from head of markdown file
+// in the Meta data there is ( date , title , permalink) which is useful data
 func readMeta(source []byte) (string, string, string) {
-	// extension for reading Meta data from head of markdown file
-	// in the Meta data there is ( date , title , permalink) which is useful data
-
+	// markdown extension that read Meta from head of markdown file
 	markdown := goldmark.New(
 		goldmark.WithExtensions(
 			meta.Meta,
 		),
 	)
 
+	// read Meta data
 	var buf bytes.Buffer
 	context := parser.NewContext()
 	if err := markdown.Convert(source, &buf, parser.WithContext(context)); err != nil {
@@ -129,10 +146,10 @@ func readContent(post *Post) string {
 		log.Println(err)
 	}
 
-	// slice of content of post exclude Meta data part
-
+	// find size of meta data
 	rs := re.FindStringSubmatch(buf.String())
 
+	// return post content exclude meta data part
 	return buf.String()[len(rs[0]):]
 
 }
@@ -147,8 +164,11 @@ func buildIndex(posts []Post) {
 		posts,
 	}
 
-	IndexHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/index.html")
-	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(IndexHtmlTemplate)))
+	// the original template
+	originIndexHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/index.html")
+
+	// concat context into original template
+	tpl := template.Must(template.New("originIndexHtmlTemplate").Parse(string(originIndexHtmlTemplate)))
 	_ = tpl.Execute(&templateBuffer, context)
 
 	// create html file and write pre-exists post template
@@ -156,7 +176,6 @@ func buildIndex(posts []Post) {
 
 	// write into html file
 	_, _ = htmlFile.WriteString(templateBuffer.String())
-
 	err := htmlFile.Close()
 	if err != nil {
 		log.Println(err)
@@ -208,7 +227,8 @@ func buildPost(post *Post) {
 
 // Build is entry function for 'odin build' command
 func Build() {
-	// clear blog dir as old files
+
+	// clear blog dir from old files ( previous build )
 	clearBlogDir()
 
 	// copy required file
