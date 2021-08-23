@@ -26,12 +26,11 @@ import (
 	"os/exec"
 )
 
-const ODIN_CONFIG = `
-site:
-	author:
-	domain:
-	language:
-	github:
+const ODIN_CONFIG = `site:
+    author:
+    domain:
+    language:
+    github:
 `
 
 type odinConfig struct {
@@ -49,12 +48,7 @@ func configGit(repo string) {
 		log.Println(err)
 	}
 
-	_, err = exec.Command("bash", "-c", "echo \"blog\" > .gitignore").Output()
-	if err != nil {
-		log.Println(err)
-	}
-
-	_, err = exec.Command("bash", "-c", "echo \".DS_Store\" > .gitignore").Output()
+	_, err = exec.Command("bash", "-c", "echo '.DS_Store\nblog' > .gitignore").Output()
 	if err != nil {
 		log.Println(err)
 	}
@@ -79,7 +73,7 @@ func configGit(repo string) {
 		log.Println(err)
 	}
 
-	_, err = exec.Command("bash", "-c", "git push -u origin main").Output()
+	_, err = exec.Command("bash", "-c", "git push -u origin main -ff").Output()
 	if err != nil {
 		log.Println(err)
 	}
@@ -99,7 +93,7 @@ func configGit(repo string) {
 		log.Println(err)
 	}
 
-	_, err = exec.Command("bash", "-c", "git push origin gh-pages").Output()
+	_, err = exec.Command("bash", "-c", "git push origin gh-pages -ff").Output()
 	if err != nil {
 		log.Println(err)
 	}
@@ -121,13 +115,13 @@ func Config() {
 	currentDir := GetCurrentDir()
 
 	// create config.yaml in blog repository
-	err := ioutil.WriteFile(currentDir+" /config.yaml", []byte(ODIN_CONFIG), 0644)
+	err := ioutil.WriteFile(currentDir+"/config.yaml", []byte(ODIN_CONFIG), 0644)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// read config.yaml and create object
-	f, _ := os.Open(currentDir + " /config.yaml")
+	f, _ := os.Open(currentDir + "/config.yaml")
 	configData := yaml.NewDecoder(f)
 	err = configData.Decode(&cfg)
 	if err != nil {
@@ -143,9 +137,6 @@ func Config() {
 
 	// add setting
 	cfg.Site.Github = repo
-
-	// configure git
-	go configGit(repo)
 
 	// get site language
 	fmt.Println("please enter blog language ( fa/en ) :")
@@ -171,8 +162,11 @@ func Config() {
 	changedData, _ := yaml.Marshal(cfg)
 
 	// write new config in config.yaml
-	err = ioutil.WriteFile(currentDir+" /config.yaml", changedData, 0644)
+	err = ioutil.WriteFile(currentDir+"/config.yaml", changedData, 0644)
 	if err != nil {
 		log.Println(err)
 	}
+
+	// configure git
+	configGit(repo)
 }

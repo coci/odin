@@ -18,7 +18,6 @@
 package odin
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -42,7 +41,6 @@ func SortMapByKey(m map[string][]Post) map[string][]Post {
 	for _, k := range keys {
 		finalMap[k] = m[k]
 	}
-	fmt.Println(finalMap)
 	return finalMap
 }
 

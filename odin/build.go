@@ -173,8 +173,6 @@ func buildIndex(posts []Post) {
 
 	context.BlogPost = SortMapByKey(postMap)
 
-	fmt.Println(context.BlogPost)
-
 	// the original template
 	originIndexHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/index.html")
 
