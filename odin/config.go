@@ -19,20 +19,32 @@ package odin
 
 import (
 	"fmt"
+	yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 )
 
-func Config() {
-	var repo string
+const ODIN_CONFIG = `
+site:
+	author:
+	domain:
+	language:
+	github:
+`
 
-	fmt.Println("please enter github repository url :")
-	_, err := fmt.Scan(&repo)
-	if err != nil {
-		return
-	};
+type odinConfig struct {
+	Site struct {
+		Author   string `yaml:"author"`
+		Domain   string `yaml:"domain"`
+		Language string `yaml:"language"`
+		Github   string `yaml:"github"`
+	} `yaml:"site"`
+}
 
-	_, err = exec.Command("bash", "-c", "git init").Output()
+func configGit(repo string) {
+	_, err := exec.Command("bash", "-c", "git init").Output()
 	if err != nil {
 		log.Println(err)
 	}
@@ -101,5 +113,66 @@ func Config() {
 	if err != nil {
 		log.Println(err)
 	}
+}
 
+func Config() {
+	var repo, language, author string
+	var cfg odinConfig
+	currentDir := GetCurrentDir()
+
+	// create config.yaml in blog repository
+	err := ioutil.WriteFile(currentDir+" /config.yaml", []byte(ODIN_CONFIG), 0644)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// read config.yaml and create object
+	f, _ := os.Open(currentDir + " /config.yaml")
+	configData := yaml.NewDecoder(f)
+	err = configData.Decode(&cfg)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// get github repo
+	fmt.Println("please enter github repository url :")
+	_, err = fmt.Scan(&repo)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// add setting
+	cfg.Site.Github = repo
+
+	// configure git
+	go configGit(repo)
+
+	// get site language
+	fmt.Println("please enter blog language ( fa/en ) :")
+	_, err = fmt.Scan(&language)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// add setting
+	cfg.Site.Language = language
+
+	// get author
+	fmt.Println("please enter your name ( it will show in title of blog ):")
+	_, err = fmt.Scan(&author)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// add setting
+	cfg.Site.Author = author
+
+	// marshal config obj with new data
+	changedData, _ := yaml.Marshal(cfg)
+
+	// write new config in config.yaml
+	err = ioutil.WriteFile(currentDir+" /config.yaml", changedData, 0644)
+	if err != nil {
+		log.Println(err)
+	}
 }

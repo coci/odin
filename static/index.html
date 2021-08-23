@@ -18,17 +18,22 @@
 
 <section class="container article-list">
 
-    {{range .BlogPost}}
-        <h3>{{ .Date }}</h3>
-        <article id="{{ .Date }}" itemscope itemprop="blogPost">
+    {{range $key, $value := .BlogPost}}
+    <h3>{{$key}}</h3>
+
+        {{ range $value}}
+        <article id="{{ .Permalink }}" itemscope itemprop="blogPost">
             <time>
-                {{ .Date -}}
+                {{ .Slug }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </time>
             <h4 itemprop="name">
-                <a href="/blog/{{ .Permalink }}" itemprop="url">&nbsp;&nbsp;&nbsp;&nbsp;{{ .Title }}</a>
+                <a href="/blog/{{ .Permalink }}" itemprop="url">{{ .Title }}</a>
             </h4>
         </article>
-    {{end}}
+        {{end}}
+
+        {{end}}
+
 </section>
     <!-- /Content -->
     <!-- Footer -->

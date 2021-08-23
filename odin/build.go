@@ -19,6 +19,7 @@ package odin
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/yuin/goldmark"
 	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/parser"
@@ -27,21 +28,25 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"text/template"
+	"time"
 )
 
-// Post struct will contain blog post
+// Post : this struct will contain blog post
 type Post struct {
-	Date      string
-	Title     string
+	Date      time.Time
+	Slug      string // like : month / day ( 01/26 ) . used in index.html page for list all blog posts
+	Title     string // post title
 	Permalink string // link of post
 	Source    []byte // content of markdown file
 }
 
+// IndexPage : we use this struct to ship data into index.html
 type IndexPage struct {
-	Title    string
-	BlogPost []Post
+	Title    string // title of owner of blog ( like : soroush safari )
+	BlogPost map[string][]Post // all posts
 }
 
 // create blog directory
@@ -89,7 +94,6 @@ func copyRequiredFile() {
 	CopyFile(currentDir+"/CNAME", currentDir+"/blog/CNAME")
 }
 
-
 // list all post in content directory
 func listPosts() []string {
 	var postList []string
@@ -109,10 +113,9 @@ func listPosts() []string {
 	return postList
 }
 
-
-// read Meta data from head of markdown file
-// in the Meta data there is ( date , title , permalink) which is useful data
-func readMeta(source []byte) (string, string, string) {
+// read Metadata from head of markdown file
+// in the Metadata there is ( date , title , permalink) which is useful data
+func readMeta(source []byte) (time.Time, string, string) {
 	// markdown extension that read Meta from head of markdown file
 	markdown := goldmark.New(
 		goldmark.WithExtensions(
@@ -129,7 +132,8 @@ func readMeta(source []byte) (string, string, string) {
 	metaData := meta.Get(context)
 
 	// get Meta data
-	date := metaData["date"].(string)
+	date, _ := time.Parse("2006-01-02", metaData["date"].(string))
+
 	title := metaData["title"].(string)
 	permalink := metaData["permalink"].(string)
 
@@ -146,7 +150,7 @@ func readContent(post *Post) string {
 		log.Println(err)
 	}
 
-	// find size of meta data
+	// find size of metadata
 	rs := re.FindStringSubmatch(buf.String())
 
 	// return post content exclude meta data part
@@ -157,16 +161,24 @@ func readContent(post *Post) string {
 // create index.html that list all blog posts
 func buildIndex(posts []Post) {
 	currentDir := GetCurrentDir()
-	var templateBuffer bytes.Buffer
 
-	context := IndexPage{
-		"test",
-		posts,
+	context := IndexPage{}
+	context.Title = "soroush"
+
+	var postMap = make(map[string][]Post)
+
+	for _, e := range posts {
+		postMap[strconv.Itoa(e.Date.Year())] = append(postMap[strconv.Itoa(e.Date.Year())],e)
 	}
+
+	context.BlogPost = SortMapByKey(postMap)
+
+	fmt.Println(context.BlogPost)
 
 	// the original template
 	originIndexHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/index.html")
 
+	var templateBuffer bytes.Buffer
 	// concat context into original template
 	tpl := template.Must(template.New("originIndexHtmlTemplate").Parse(string(originIndexHtmlTemplate)))
 	_ = tpl.Execute(&templateBuffer, context)
@@ -191,7 +203,7 @@ func buildPost(post *Post) {
 	// convert title to 'dash-seperated'
 	convertedTitle := strings.ReplaceAll(post.Title, " ", "-")
 
-	// get content of post exclude Meta data part
+	// get content of post exclude Metadata part
 	content := readContent(post)
 
 	// create directory for post
@@ -203,9 +215,14 @@ func buildPost(post *Post) {
 	// replace content
 	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(postHtmlTemplate)))
 	var templateBuffer bytes.Buffer
+
+	// convert post date to string
+	year, month, day := post.Date.Date()
+	stringDate := fmt.Sprintf("%d-%d-%d", year, month, day)
+
 	context := map[string]string{
 		"Title":     post.Title,
-		"Date":      post.Date,
+		"Date":      stringDate,
 		"Content":   content,
 		"Permalink": post.Permalink,
 	}
@@ -245,15 +262,18 @@ func Build() {
 		// read post
 		source, _ := ioutil.ReadFile(currentDir + "/content/" + dir)
 
-		// get Meta data from the post
+		// get Metadata from the post
 		date, title, permalink := readMeta(source)
 
+		// create slug
+		splitDate := strings.Split(date.Format("2006-01-02"), "-")
+		slugifyDate := strings.Join(splitDate[1:], "/")
+
 		// create Post type
-		blogPost := Post{Date: date, Title: title, Permalink: permalink, Source: source}
+		blogPost := Post{Date: date, Slug: slugifyDate, Title: title, Permalink: permalink, Source: source}
 		posts = append(posts, blogPost)
 		// make html from post
 		buildPost(&blogPost)
-
 	}
 
 	// make index.html that list all blog posts

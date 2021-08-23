@@ -18,13 +18,33 @@
 package odin
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"runtime"
+	"sort"
 )
+
+func SortMapByKey(m map[string][]Post) map[string][]Post {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool { return keys[i] > keys[j]})
+
+
+
+	finalMap := make(map[string][]Post)
+
+	for _, k := range keys {
+		finalMap[k] = m[k]
+	}
+	fmt.Println(finalMap)
+	return finalMap
+}
 
 func GetCurrentDir() string {
 	// find current directory of user terminal
