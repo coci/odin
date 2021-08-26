@@ -117,7 +117,7 @@ func Config() {
 
 	// get github repo
 	fmt.Println("please enter github repository url :")
-	_, err = fmt.Scan(&repo)
+	_, err = fmt.Scanln(&repo)
 	if err != nil {
 		log.Println(err)
 	}
@@ -127,7 +127,7 @@ func Config() {
 
 	// get site language
 	fmt.Println("please enter blog language ( fa/en ) :")
-	_, err = fmt.Scan(&language)
+	_, err = fmt.Scanln(&language)
 	if err != nil {
 		log.Println(err)
 	}
@@ -137,7 +137,7 @@ func Config() {
 
 	// get author
 	fmt.Println("please enter your name ( it will show in title of blog ):")
-	_, err = fmt.Scan(&author)
+	_, err = fmt.Scanln(&author)
 	if err != nil {
 		log.Println(err)
 	}
