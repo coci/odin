@@ -18,6 +18,7 @@
 package odin
 
 import (
+	"gopkg.in/yaml.v2"
 	"io"
 	"log"
 	"os"
@@ -26,6 +27,21 @@ import (
 	"runtime"
 	"sort"
 )
+
+// ReadConfig read config.yaml
+func ReadConfig() OdinConfig {
+	var cfg OdinConfig
+	currentDir := GetCurrentDir()
+
+	f, _ := os.Open(currentDir + "/config.yaml")
+	configData := yaml.NewDecoder(f)
+	err := configData.Decode(&cfg)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return cfg
+}
 
 func SortMapByKey(m map[string][]Post) map[string][]Post {
 	keys := make([]string, 0, len(m))

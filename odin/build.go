@@ -34,15 +34,6 @@ import (
 	"time"
 )
 
-// Post : this struct will contain blog post
-type Post struct {
-	Date      time.Time
-	Slug      string // like : month / day ( 01/26 ) . used in index.html page for list all blog posts
-	Title     string // post title
-	Permalink string // link of post
-	Source    []byte // content of markdown file
-}
-
 // IndexPage : we use this struct to ship data into index.html
 type IndexPage struct {
 	Title    string            // title of owner of blog ( like : soroush safari )
@@ -196,7 +187,6 @@ func buildIndex(posts []Post) {
 // create html file from markdown file
 func buildPost(post *Post) {
 	currentDir := GetCurrentDir()
-	projectRoot := GetProjectRootDir()
 
 	// convert title to 'dash-seperated'
 	convertedTitle := strings.ReplaceAll(post.Title, " ", "-")
@@ -208,7 +198,7 @@ func buildPost(post *Post) {
 	createDirForPost(currentDir, convertedTitle)
 
 	// read per-exist template
-	postHtmlTemplate, _ := ioutil.ReadFile(projectRoot + "/static/post.html")
+	postHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/post.html")
 
 	// replace content
 	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(postHtmlTemplate)))

@@ -22,18 +22,10 @@ import (
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	"os"
 	"os/exec"
 )
 
-const ODIN_CONFIG = `site:
-    author:
-    domain:
-    language:
-    github:
-`
-
-type odinConfig struct {
+type OdinConfig struct {
 	Site struct {
 		Author   string `yaml:"author"`
 		Domain   string `yaml:"domain"`
@@ -111,22 +103,17 @@ func configGit(repo string) {
 
 func Config() {
 	var repo, language, author string
-	var cfg odinConfig
+
 	currentDir := GetCurrentDir()
 
 	// create config.yaml in blog repository
-	err := ioutil.WriteFile(currentDir+"/config.yaml", []byte(ODIN_CONFIG), 0644)
+	err := ioutil.WriteFile(currentDir+"/config.yaml", []byte(ConfigYaml), 0644)
 	if err != nil {
 		log.Println(err)
 	}
 
-	// read config.yaml and create object
-	f, _ := os.Open(currentDir + "/config.yaml")
-	configData := yaml.NewDecoder(f)
-	err = configData.Decode(&cfg)
-	if err != nil {
-		log.Println(err)
-	}
+	// config object
+	cfg := ReadConfig()
 
 	// get github repo
 	fmt.Println("please enter github repository url :")
@@ -167,6 +154,46 @@ func Config() {
 		log.Println(err)
 	}
 
+
+	// copy static files
+	if cfg.Site.Language == "en" {
+		err := ioutil.WriteFile(currentDir+"/template/index.html", []byte(IndexEn), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+		err = ioutil.WriteFile(currentDir+"/template/post.html", []byte(PostEn), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+		err = ioutil.WriteFile(currentDir+"/static/main.css", []byte(Css), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+		err = ioutil.WriteFile(currentDir+"/static/highlight.pack.js", []byte(Js), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+
+	} else if cfg.Site.Language == "fa" {
+		err = ioutil.WriteFile(currentDir+"/template/index.html", []byte(IndexFa), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+		err = ioutil.WriteFile(currentDir+"/template/post.html", []byte(PostFa), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+		err = ioutil.WriteFile(currentDir+"/static/main.css", []byte(Css), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+		err = ioutil.WriteFile(currentDir+"/static/highlight.pack.js", []byte(Js), 0644)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
 	// configure git
 	configGit(repo)
+
 }
