@@ -47,7 +47,7 @@ func Push() {
 		fmt.Println(err)
 	}
 
-	_, err = exec.Command("bash", "-c", "git push origin main gh-pages").Output()
+	_, err = exec.Command("bash", "-c", "git push origin main gh-pages -ff").Output()
 	if err != nil {
 		fmt.Println("7")
 		fmt.Println(err)
