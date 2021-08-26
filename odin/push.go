@@ -41,7 +41,6 @@ func Push() {
 		fmt.Println(err)
 	}
 
-
 	_, err = exec.Command("bash", "-c", "cd ..").Output()
 	if err != nil {
 		fmt.Println("6")

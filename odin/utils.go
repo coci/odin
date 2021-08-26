@@ -32,9 +32,7 @@ func SortMapByKey(m map[string][]Post) map[string][]Post {
 	for k := range m {
 		keys = append(keys, k)
 	}
-	sort.Slice(keys, func(i, j int) bool { return keys[i] > keys[j]})
-
-
+	sort.Slice(keys, func(i, j int) bool { return keys[i] > keys[j] })
 
 	finalMap := make(map[string][]Post)
 

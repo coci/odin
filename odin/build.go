@@ -45,7 +45,7 @@ type Post struct {
 
 // IndexPage : we use this struct to ship data into index.html
 type IndexPage struct {
-	Title    string // title of owner of blog ( like : soroush safari )
+	Title    string            // title of owner of blog ( like : soroush safari )
 	BlogPost map[string][]Post // all posts
 }
 
@@ -168,7 +168,7 @@ func buildIndex(posts []Post) {
 	var postMap = make(map[string][]Post)
 
 	for _, e := range posts {
-		postMap[strconv.Itoa(e.Date.Year())] = append(postMap[strconv.Itoa(e.Date.Year())],e)
+		postMap[strconv.Itoa(e.Date.Year())] = append(postMap[strconv.Itoa(e.Date.Year())], e)
 	}
 
 	context.BlogPost = SortMapByKey(postMap)

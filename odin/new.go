@@ -32,10 +32,10 @@ func New(title string) {
 	// get current directory
 	currentDir := GetCurrentDir()
 
-	blogPost, _ := os.Create(currentDir + "/content/"+convertedTitle+".md")
+	blogPost, _ := os.Create(currentDir + "/content/" + convertedTitle + ".md")
 
 	currentTime := time.Now()
-	_, err := blogPost.WriteString("---\ndate: "+currentTime.Format("2006-01-02")+"\ntitle: "+originalTitle+"\npermalink: "+convertedTitle+"\n---\n")
+	_, err := blogPost.WriteString("---\ndate: " + currentTime.Format("2006-01-02") + "\ntitle: " + originalTitle + "\npermalink: " + convertedTitle + "\n---\n")
 	if err != nil {
 		log.Println(err)
 	}
