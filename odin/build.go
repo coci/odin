@@ -148,9 +148,10 @@ func readContent(post *Post) string {
 // create index.html that list all blog posts
 func buildIndex(posts []Post) {
 	currentDir := GetCurrentDir()
+	cfg := ReadConfig()
 
 	context := IndexPage{}
-	context.Title = "soroush"
+	context.Title = cfg.Site.Author
 
 	var postMap = make(map[string][]Post)
 
@@ -185,6 +186,7 @@ func buildIndex(posts []Post) {
 func buildPost(post *Post) {
 	currentDir := GetCurrentDir()
 
+	cfg := ReadConfig()
 	// convert title to 'dash-seperated'
 	convertedTitle := strings.ReplaceAll(post.Title, " ", "-")
 
@@ -202,6 +204,7 @@ func buildPost(post *Post) {
 	var templateBuffer bytes.Buffer
 
 	context := map[string]string{
+		"Author":    cfg.Site.Author,
 		"Title":     post.Title,
 		"Date":      post.Date,
 		"Content":   content,

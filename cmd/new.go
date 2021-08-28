@@ -32,7 +32,7 @@ var newCmd = &cobra.Command{
 	Long:  `This will create new post template inside the content directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if args[0] == "" {
+		if len(args) == 0 {
 			log.Println("you have to provide title for your post.")
 			os.Exit(0)
 		}

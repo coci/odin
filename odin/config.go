@@ -18,9 +18,11 @@
 package odin
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 
 	yaml "gopkg.in/yaml.v2"
@@ -103,7 +105,7 @@ func configGit(repo string) {
 }
 
 func Config() {
-	var repo, language, author string
+	var repo, language string
 
 	currentDir := GetCurrentDir()
 
@@ -138,7 +140,9 @@ func Config() {
 
 	// get author
 	fmt.Println("please enter your name ( it will show in title of blog ):")
-	_, err = fmt.Scanln(&author)
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	author := scanner.Text()
 	if err != nil {
 		log.Println(err)
 	}

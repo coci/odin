@@ -282,12 +282,12 @@ html[lang=Farsi] .pagination nav a.next{
 const PostFa = `<!DOCTYPE html>
 <html lang="Farsi">
 <head>
-    <title>{{ .Title }}</title>
+    <title>{{ .Author }}</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="اضافه کردن{{ .Title }}">
+    <meta property="og:title" content="{{ .Title }}">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ .Title }}">
     <meta name="twitter:description" content=" {{ .Title }} ...">
@@ -299,10 +299,13 @@ const PostFa = `<!DOCTYPE html>
 
 <!-- Header -->
 <header>
-    <section class="container">
-        <nav>
-        </nav>
-    </section>
+  <section class="container">
+    <nav>
+      <h1>
+        <a href="/" class="logo">{{ .Author }}</a>
+      </h1>
+    </nav>
+  </section>
 </header>
 <!-- /Header -->
 
@@ -354,7 +357,7 @@ const PostFa = `<!DOCTYPE html>
 const PostEn = `<!DOCTYPE html>
 <html lang="English">
 <head>
-  <title>{{ .Title }}</title>
+  <title>{{ .Author }}</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -372,10 +375,13 @@ const PostEn = `<!DOCTYPE html>
 
 <!-- Header -->
 <header>
-    <section class="container">
-        <nav>
-        </nav>
-    </section>
+  <section class="container">
+    <nav>
+      <h1>
+        <a href="/" class="logo">{{ .Author }}</a>
+      </h1>
+    </nav>
+  </section>
 </header>
 <!-- /Header -->
 
@@ -433,17 +439,13 @@ const IndexEn = `
 <html lang="English">
 <head>
   <title>{{ .Title }}</title>
-
   <meta charset="utf-8">
-  <meta name="description" content="{{ .Description }}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:type" content="website">
   <meta property="og:title" content="{{ .Title }}">
   <meta property="og:site_name" content="{{ .Title }}">
-  <meta property="og:description" content="{{ .Description }}">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="{{ .Title }}">
-  <meta name="twitter:description" content="{{ .Description }}">
 
   <link rel="short icon" href="">
   <link rel="stylesheet" href="./static/main.css" type="text/css">
@@ -510,63 +512,75 @@ const IndexEn = `
 
 const IndexFa = `
 <!DOCTYPE html>
-<html lang = "Farsi">
+<html lang="Farsi">
 <head>
-<title>{{ .Title }}</title>
+    <title>{{ .Title }}</title>
 
-<meta charset = "utf-8">
-<meta name = "viewport" content = "width=device-width, initial-scale=1">
-<meta property = "og:type" content = "website">
-<meta property = "og:title" content = "{{ .Title }}">
-<meta property= "og:site_name" content = "{{ .Title }}">
-<meta name ="twitter:card" content = "summary">
-<meta name = "twitter:title" content = "{{ .Title }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:site_name" content="{{ .Title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ .Title }}">
 
-<link rel = "short icon" href= "">
-<link rel = "stylesheet" href ="./static/main.css"
-type = "text/css">
+    <link rel="short icon" href="">
+    <link rel="stylesheet" href="./static/main.css"
+          type="text/css">
 </head>
 <body>
 
-<section class = "container article-list">
+<!-- Header -->
+<header>
+    <section class="container">
+        <nav>
+            <h1>
+                <a href="/" class="logo">{{ .Title }}</a>
+            </h1>
+        </nav>
+    </section>
+</header>
+<!-- /Header -->
 
-{{range $key, $value :=.BlogPost}}
-<h3>{{$key}}</h3>
+<section class="container article-list">
 
-{{ range $value}}
-<article id = "{{ .Permalink }}" itemscope itemprop = "blogPost">
-<time>
-{{ .Slug }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp
-</time>
-<h4 itemprop = "name">
-<a href = "/blog/{{ .Permalink }}" itemprop = "url">{{ .Title }}</a>
-</h4>
-</article>
-{{end}}
+    {{range $key, $value :=.BlogPost}}
+    <h3>{{$key}}</h3>
 
-{{end}}
+    {{ range $value}}
+    <article id="{{ .Permalink }}" itemscope itemprop="blogPost">
+        <time>
+            {{ .Slug }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp
+        </time>
+        <h4 itemprop="name">
+            <a href="/blog/{{ .Permalink }}" itemprop="url">{{ .Title }}</a>
+        </h4>
+    </article>
+    {{end}}
+
+    {{end}}
 
 </section>
 <!-- /Content -->
 <!-- Footer -->
 <footer>
-<!--<section class = "copyright">
-</section>-->
-<section class ="container">
-<div class = "delimiter">
-<a href = "/" class = "logo">
-<img src= "/static/theme/sallar/img/logo.svg">
-</a>
-</div>
-<p>
-powered with 💜 by <a href = "https://github.com/coci/odin">Odin</a>
-</p>
-</section>
+    <!--<section class = "copyright">
+    </section>-->
+    <section class="container">
+        <div class="delimiter">
+            <a href="/" class="logo">
+                <img src="/static/theme/sallar/img/logo.svg">
+            </a>
+        </div>
+        <p>
+            powered with 💜 by <a href="https://github.com/coci/odin">Odin</a>
+        </p>
+    </section>
 </footer>
 <!-- /Footer -->
 
 <!-- Scripts -->
-<script src = "./static/highlight.pack.js"></script>
+<script src="./static/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad(); </script>
 </body>
 </html>
