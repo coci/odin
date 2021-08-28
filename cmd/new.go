@@ -18,10 +18,11 @@
 package cmd
 
 import (
-	"github.com/coci/odin/odin"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
+
+	"github.com/coci/odin/odin"
+	"github.com/spf13/cobra"
 )
 
 // newCmd represents the new command

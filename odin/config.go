@@ -19,10 +19,11 @@ package odin
 
 import (
 	"fmt"
-	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os/exec"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 type OdinConfig struct {
@@ -153,7 +154,6 @@ func Config() {
 	if err != nil {
 		log.Println(err)
 	}
-
 
 	// copy static files
 	if cfg.Site.Language == "en" {

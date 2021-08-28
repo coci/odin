@@ -18,7 +18,6 @@
 package odin
 
 import (
-	"gopkg.in/yaml.v2"
 	"io"
 	"log"
 	"os"
@@ -26,6 +25,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+
+	"gopkg.in/yaml.v2"
 )
 
 // ReadConfig read config.yaml
@@ -84,7 +85,7 @@ func CopyFile(src, dst string) {
 	}
 
 	if !sourceFileStat.Mode().IsRegular() {
-		log.Println("%s is not a regular file", src)
+		log.Println(src)
 	}
 
 	source, err := os.Open(src)

@@ -20,10 +20,6 @@ package odin
 import (
 	"bytes"
 	"fmt"
-	ptime "github.com/yaa110/go-persian-calendar"
-	"github.com/yuin/goldmark"
-	meta "github.com/yuin/goldmark-meta"
-	"github.com/yuin/goldmark/parser"
 	"io/ioutil"
 	"log"
 	"os"
@@ -33,6 +29,11 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	ptime "github.com/yaa110/go-persian-calendar"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/parser"
 )
 
 // IndexPage : we use this struct to ship data into index.html
