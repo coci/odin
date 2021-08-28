@@ -21,9 +21,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path"
-	"path/filepath"
-	"runtime"
 	"sort"
 
 	"gopkg.in/yaml.v2"
@@ -67,13 +64,6 @@ func GetCurrentDir() string {
 		log.Println(err)
 	}
 	return path
-}
-
-func GetProjectRootDir() string {
-	// get odin installation dir
-	_, b, _, _ := runtime.Caller(0)
-	d := path.Join(path.Dir(b))
-	return filepath.Dir(d)
 }
 
 func CopyFile(src, dst string) {

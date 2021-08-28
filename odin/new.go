@@ -18,6 +18,7 @@
 package odin
 
 import (
+	ptime "github.com/yaa110/go-persian-calendar"
 	"log"
 	"os"
 	"strings"
@@ -29,20 +30,34 @@ func New(title string) {
 	originalTitle := title
 	convertedTitle := strings.ReplaceAll(title, " ", "-")
 
+	cfg := ReadConfig()
 	// get current directory
 	currentDir := GetCurrentDir()
 
 	blogPost, _ := os.Create(currentDir + "/content/" + convertedTitle + ".md")
 
-	currentTime := time.Now()
-	_, err := blogPost.WriteString("---\ndate: " + currentTime.Format("2006-01-02") + "\ntitle: " + originalTitle + "\npermalink: " + convertedTitle + "\n---\n")
-	if err != nil {
-		log.Println(err)
-	}
+	if cfg.Site.Language == "en" {
+		currentTime := time.Now().Format("2006-01-02")
+		_, err := blogPost.WriteString("---\ndate: " + currentTime + "\ntitle: " + originalTitle + "\npermalink: " + convertedTitle + "\n---\n")
+		if err != nil {
+			log.Println(err)
+		}
 
-	err = blogPost.Close()
-	if err != nil {
-		log.Println(err)
+		err = blogPost.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		currentTime := ptime.Now().Format("yyyy-MM-dd")
+		_, err := blogPost.WriteString("---\ndate: " + currentTime + "\ntitle: " + originalTitle + "\npermalink: " + convertedTitle + "\n---\n")
+		if err != nil {
+			log.Println(err)
+		}
+
+		err = blogPost.Close()
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 }

@@ -19,21 +19,16 @@ package odin
 
 import (
 	"bytes"
-	"fmt"
+	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
+	"github.com/yuin/goldmark/parser"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"text/template"
-	"time"
-
-	ptime "github.com/yaa110/go-persian-calendar"
-	"github.com/yuin/goldmark"
-	meta "github.com/yuin/goldmark-meta"
-	"github.com/yuin/goldmark/parser"
 )
 
 // IndexPage : we use this struct to ship data into index.html
@@ -108,7 +103,7 @@ func listPosts() []string {
 
 // read Metadata from head of markdown file
 // in the Metadata there is ( date , title , permalink) which is useful data
-func readMeta(source []byte) (time.Time, string, string) {
+func readMeta(source []byte) (string, string, string) {
 	// markdown extension that read Meta from head of markdown file
 	markdown := goldmark.New(
 		goldmark.WithExtensions(
@@ -125,8 +120,7 @@ func readMeta(source []byte) (time.Time, string, string) {
 	metaData := meta.Get(context)
 
 	// get Meta data
-	date, _ := time.Parse("2006-01-02", metaData["date"].(string))
-
+	date := metaData["date"].(string)
 	title := metaData["title"].(string)
 	permalink := metaData["permalink"].(string)
 
@@ -161,7 +155,8 @@ func buildIndex(posts []Post) {
 	var postMap = make(map[string][]Post)
 
 	for _, e := range posts {
-		postMap[strconv.Itoa(e.Date.Year())] = append(postMap[strconv.Itoa(e.Date.Year())], e)
+		postYear := strings.Split(e.Date, "-")
+		postMap[postYear[0]] = append(postMap[postYear[0]], e)
 	}
 
 	context.BlogPost = SortMapByKey(postMap)
@@ -189,7 +184,7 @@ func buildIndex(posts []Post) {
 // create html file from markdown file
 func buildPost(post *Post) {
 	currentDir := GetCurrentDir()
-	cfg := ReadConfig()
+
 	// convert title to 'dash-seperated'
 	convertedTitle := strings.ReplaceAll(post.Title, " ", "-")
 
@@ -206,18 +201,9 @@ func buildPost(post *Post) {
 	tpl := template.Must(template.New("postHtmlTemplate").Parse(string(postHtmlTemplate)))
 	var templateBuffer bytes.Buffer
 
-	// convert post date to string
-	year, month, day := post.Date.Date()
-	stringDate := fmt.Sprintf("%d-%d-%d", year, month, day)
-
-	if cfg.Site.Language == "fa" {
-		yearFa, monthFa, dayFa := ptime.New(post.Date).Date()
-		stringDate = fmt.Sprintf("%d-%d-%d", yearFa, monthFa, dayFa)
-	}
-
 	context := map[string]string{
 		"Title":     post.Title,
-		"Date":      stringDate,
+		"Date":      post.Date,
 		"Content":   content,
 		"Permalink": post.Permalink,
 	}
@@ -227,7 +213,7 @@ func buildPost(post *Post) {
 	// create html file and write pre-exists post template
 	htmlFile, _ := os.Create(currentDir + "/blog/" + convertedTitle + "/index.html")
 
-	// write (post from markdown and concat the post into per-existing tempalte ) into html file
+	// write (post from markdown and concat the post into per-existing template ) into html file
 	_, _ = htmlFile.WriteString(templateBuffer.String())
 
 	err := htmlFile.Close()
@@ -261,16 +247,18 @@ func Build() {
 		date, title, permalink := readMeta(source)
 
 		// create slug
-		splitDate := strings.Split(date.Format("2006-01-02"), "-")
+		splitDate := strings.Split(date, "-")
 		slugifyDate := strings.Join(splitDate[1:], "/")
 
 		// create Post type
 		blogPost := Post{Date: date, Slug: slugifyDate, Title: title, Permalink: permalink, Source: source}
-		posts = append(posts, blogPost)
+
 		// make html from post
 		buildPost(&blogPost)
+
+		posts = append(posts, blogPost)
 	}
 
-	// make index.html that list all blog posts
+	//make index.html that list all blog posts
 	buildIndex(posts)
 }
