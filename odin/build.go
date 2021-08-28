@@ -20,6 +20,7 @@ package odin
 import (
 	"bytes"
 	"fmt"
+	ptime "github.com/yaa110/go-persian-calendar"
 	"github.com/yuin/goldmark"
 	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/parser"
@@ -187,7 +188,7 @@ func buildIndex(posts []Post) {
 // create html file from markdown file
 func buildPost(post *Post) {
 	currentDir := GetCurrentDir()
-
+	cfg := ReadConfig()
 	// convert title to 'dash-seperated'
 	convertedTitle := strings.ReplaceAll(post.Title, " ", "-")
 
@@ -207,6 +208,11 @@ func buildPost(post *Post) {
 	// convert post date to string
 	year, month, day := post.Date.Date()
 	stringDate := fmt.Sprintf("%d-%d-%d", year, month, day)
+
+	if cfg.Site.Language == "fa" {
+		yearFa, monthFa, dayFa := ptime.New(post.Date).Date()
+		stringDate = fmt.Sprintf("%d-%d-%d", yearFa, monthFa, dayFa)
+	}
 
 	context := map[string]string{
 		"Title":     post.Title,
