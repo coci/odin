@@ -27,8 +27,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// SortBlogPostByYear sort blog posts
 func SortBlogPostByYear(posts []Post) []map[string][]Post {
+	// this function will return something like this :
+	// [ map{"2021":[post,post,post,....} , map{"2020":[post,post,post,....} , ..... ]
+	// the key in map are year of post
+	// the order of map added to slice is in reverse order
+
 	// simulation of set data structure
+	// yearsMap contain unique key of  year of posts
 	var yearsMap = make(map[string]string)
 
 	for _, e := range posts {
@@ -38,15 +45,19 @@ func SortBlogPostByYear(posts []Post) []map[string][]Post {
 		}
 	}
 
+	// create slice of unique years
 	var yearList []string
-
 	for k := range yearsMap {
 		yearList = append(yearList, k)
 	}
 
+	// reverse sort of years
+	// this will be something like : ["2021" "2020" "2019"]
 	sort.Slice(yearList, func(i, j int) bool { return yearList[i] > yearList[j] })
 
-	var blogPosts []map[string][]Post
+	// blogPosts contain all posts with key as year and value as post in reverse order of years like :
+	// [ map{"2021":[post,post,post,....} , map{"2020":[post,post,post,....} , ..... ]
+	var blogPost []map[string][]Post
 	for _, e := range yearList {
 		var yearPost = make(map[string][]Post)
 		for _, p := range posts {
@@ -54,11 +65,11 @@ func SortBlogPostByYear(posts []Post) []map[string][]Post {
 				yearPost[e] = append(yearPost[e], p)
 			}
 		}
-		blogPosts = append(blogPosts, yearPost)
+		blogPost = append(blogPost, yearPost)
 
 	}
 
-	return blogPosts
+	return blogPost
 }
 
 // ReadConfig read config.yaml
@@ -74,21 +85,6 @@ func ReadConfig() OdinConfig {
 	}
 
 	return cfg
-}
-
-func SortMapByKey(m map[string][]Post) map[string][]Post {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Slice(keys, func(i, j int) bool { return keys[i] > keys[j] })
-
-	finalMap := make(map[string][]Post)
-
-	for _, k := range keys {
-		finalMap[k] = m[k]
-	}
-	return finalMap
 }
 
 func GetCurrentDir() string {
