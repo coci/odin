@@ -12,6 +12,10 @@ vet: fmt
 	go vet ./...
 .PHONY:vet
 
+shadow: fmt
+	shadow ./...
+.PHONY:shadow
+
 install: vet
 	go install github.com/coci/odin
 .PHONY:build

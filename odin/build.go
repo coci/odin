@@ -33,8 +33,8 @@ import (
 
 // IndexPage : we use this struct to ship data into index.html
 type IndexPage struct {
-	Title    string            // title of owner of blog ( like : soroush safari )
-	BlogPost map[string][]Post // all posts
+	Title    string              // title of owner of blog ( like : soroush safari )
+	BlogPost []map[string][]Post // all posts
 }
 
 // create blog directory
@@ -127,7 +127,7 @@ func readMeta(source []byte) (string, string, string) {
 	return date, title, permalink
 }
 
-// read data from markdown exclude Meta data and convert it to html
+// read data from markdown exclude Metadata and convert it to html
 func readContent(post *Post) string {
 	var buf bytes.Buffer
 	var re = regexp.MustCompile(`<hr>(.|\n)*?</h2>`)
@@ -153,14 +153,7 @@ func buildIndex(posts []Post) {
 	context := IndexPage{}
 	context.Title = cfg.Site.Author
 
-	var postMap = make(map[string][]Post)
-
-	for _, e := range posts {
-		postYear := strings.Split(e.Date, "-")
-		postMap[postYear[0]] = append(postMap[postYear[0]], e)
-	}
-
-	context.BlogPost = SortMapByKey(postMap)
+	context.BlogPost = SortBlogPostByYear(posts)
 
 	// the original template
 	originIndexHtmlTemplate, _ := ioutil.ReadFile(currentDir + "/template/index.html")

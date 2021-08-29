@@ -484,8 +484,10 @@ const IndexEn = `
 
 <section class="container article-list">
   
-       {{range $key, $value := .BlogPost}}
-    <h3>{{$key}}</h3>
+        {{range $item := .BlogPost}}
+
+        {{range $key, $value := .}}
+        <h3>{{$key}}</h3>
 
         {{ range $value}}
         <article id="{{ .Permalink }}" itemscope itemprop="blogPost">
@@ -496,6 +498,8 @@ const IndexEn = `
                 <a href="/blog/{{ .Permalink }}" itemprop="url">{{ .Title }}</a>
             </h4>
         </article>
+        {{end}}
+
         {{end}}
 
         {{end}}
@@ -561,21 +565,25 @@ const IndexFa = `
 
 <section class="container article-list">
 
-    {{range $key, $value :=.BlogPost}}
-    <h3>{{$key}}</h3>
+        {{range $item := .BlogPost}}
 
-    {{ range $value}}
-    <article id="{{ .Permalink }}" itemscope itemprop="blogPost">
-        <time>
-            {{ .Slug }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp
-        </time>
-        <h4 itemprop="name">
-            <a href="/blog/{{ .Permalink }}" itemprop="url">{{ .Title }}</a>
-        </h4>
-    </article>
-    {{end}}
+        {{range $key, $value := .}}
+        <h3>{{$key}}</h3>
 
-    {{end}}
+        {{ range $value}}
+        <article id="{{ .Permalink }}" itemscope itemprop="blogPost">
+            <time>
+                {{ .Slug }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </time>
+            <h4 itemprop="name">
+                <a href="/blog/{{ .Permalink }}" itemprop="url">{{ .Title }}</a>
+            </h4>
+        </article>
+        {{end}}
+
+        {{end}}
+
+        {{end}}
 
 </section>
 <!-- /Content -->

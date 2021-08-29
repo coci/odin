@@ -22,9 +22,44 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
+
+func SortBlogPostByYear(posts []Post) []map[string][]Post {
+	// simulation of set data structure
+	var yearsMap = make(map[string]string)
+
+	for _, e := range posts {
+		_, ok := yearsMap[strings.Split(e.Date, "-")[0]]
+		if !ok {
+			yearsMap[strings.Split(e.Date, "-")[0]] = strings.Split(e.Date, "-")[0]
+		}
+	}
+
+	var yearList []string
+
+	for k := range yearsMap {
+		yearList = append(yearList, k)
+	}
+
+	sort.Slice(yearList, func(i, j int) bool { return yearList[i] > yearList[j] })
+
+	var blogPosts []map[string][]Post
+	for _, e := range yearList {
+		var yearPost = make(map[string][]Post)
+		for _, p := range posts {
+			if strings.Split(p.Date, "-")[0] == e {
+				yearPost[e] = append(yearPost[e], p)
+			}
+		}
+		blogPosts = append(blogPosts, yearPost)
+
+	}
+
+	return blogPosts
+}
 
 // ReadConfig read config.yaml
 func ReadConfig() OdinConfig {
